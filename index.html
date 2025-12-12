@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuliner Nusantara - Makanan Tradisional Indonesia</title>
+    <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        /* Palet Warna: Kuning Keemasan (#D4AF37), Coklat Hangat (#8B4513), Hijau Tua (#228B22), Putih (#FFFFFF), Abu-abu Muda (#F5F5F5) */
+        body {
+            font-family: 'Lora', serif; /* Font kustom yang lebih elegan */
+            margin: 0;
+            padding: 0;
+            background-color: #F5F5F5;
+            color: #8B4513;
+            line-height: 1.6;
+        }
+        header {
+            background-color: #D4AF37;
+            color: #FFFFFF;
+            padding: 1rem;
+            text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        nav {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+        }
+        nav a {
+            color: #FFFFFF;
+            text-decoration: none;
+            font-weight: bold;
+            transition: color 0.3s ease;
+        }
+        nav a:hover {
+            color: #228B22;
+        }
+        
+        /* === STYLE HERO BARU DENGAN VIDEO === */
+        .hero {
+            height: auto; 
+            min-height: 450px;
+            padding-top: 2rem;
+            padding-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: #FFFFFF;
+            background-color: #8B4513; /* Warna solid */
+            background-size: cover;
+            background-position: center;
+        }
+        .hero-content {
+            max-width: 900px;
+            padding: 2rem;
+            background-color: rgba(0, 0, 0, 0.4); /* Background gelap agar teks dan video menonjol */
+            border-radius: 10px;
+        }
+        .hero h1 {
+            font-size: 2.5rem;
+            margin: 0.5rem 0;
+        }
+        
+        /* Style untuk membuat video responsif (16:9 ratio) */
+        .video-container {
+            position: relative;
+            padding-bottom: 56.25%; /* Rasio 16:9 */
+            height: 0;
+            overflow: hidden;
+            margin: 1.5rem auto 0.5rem; /* Margin di bawah teks */
+            max-width: 100%;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+        }
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        /* === AKHIR STYLE HERO BARU === */
+
+        /* Hapus atau komentari @keyframes slideshow yang lama */
+        /* @keyframes slideshow { ... } */
+
+        section {
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        /* Style tambahan untuk bagian Mission */
+        #mission {
+            background-color: #FFFFFF;
+            border-bottom: 2px solid #D4AF37;
+            text-align: center;
+        }
+        #mission h2 {
+            color: #228B22;
+        }
+        #mission ul {
+            list-style: none;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+        #mission li {
+            background-color: #F5F5F5;
+            border-left: 5px solid #D4AF37;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            max-width: 300px;
+            text-align: left;
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        /* End style tambahan */
+        .filter {
+            margin-bottom: 1rem;
+        }
+        .filter select {
+            padding: 0.5rem;
+            background-color: #D4AF37;
+            color: #FFFFFF;
+            border: none;
+            border-radius: 5px;
+        }
+        .recipe-grid, .article-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1rem;
+        }
+        .card {
+            background-color: #FFFFFF;
+            border: 1px solid #228B22;
+            border-radius: 10px;
+            padding: 1rem;
+            text-align: center;
+            /* Perbaikan: Transisi opacity untuk filter yang halus */
+            transition: transform 0.3s ease, box-shadow 0.3s ease, opacity 0.5s ease; 
+            cursor: pointer;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        /* Perbaikan: Style untuk kartu yang disembunyikan filter */
+        .card.hidden-by-filter {
+            opacity: 0;
+            height: 0;
+            padding-top: 0;
+            padding-bottom: 0;
+            margin-top: 0;
+            margin-bottom: 0;
+            pointer-events: none;
+            overflow: hidden;
+        }
+        .card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 5px;
+        }
+        .card h3 {
+            color: #D4AF37;
+        }
+        .details {
+            margin-top: 1rem;
+            text-align: left;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-in-out, opacity 0.4s ease;
+            opacity: 0;
+        }
+        .details.active {
+            max-height: 1200px;
+            opacity: 1;
+        }
+        .details h4 {
+            color: #228B22;
+            margin-top: 15px;
+        }
+        .testimoni {
+            border-top: 1px dashed #D4AF37;
+            padding-top: 10px;
+            margin-top: 15px;
+        }
+        .testimoni p {
+            font-style: italic;
+            color: #8B4513;
+            margin-bottom: 5px;
+        }
+        .testimoni small {
+            display: block;
+            text-align: right;
+            font-weight: bold;
+            color: #228B22;
+        }
+
+        .toggle-btn {
+            background-color: #D4AF37;
+            color: #FFFFFF;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 0.5rem;
+            transition: background-color 0.3s ease;
+        }
+        .toggle-btn:hover {
+            background-color: #228B22;
+        }
+        footer {
+            background-color: #8B4513;
+            color: #FFFFFF;
+            text-align: center;
+            padding: 1rem;
+            display: flex; 
+            justify-content: space-around; 
+            align-items: center; 
+            flex-wrap: wrap; 
+        }
+        .footer-qr {
+            text-align: center;
+            margin: 0.5rem 1rem;
+        }
+        .footer-qr img {
+            width: 80px; 
+            height: 80px;
+            background-color: white; 
+            padding: 5px;
+            border-radius: 5px;
+        }
+        /* Responsivitas */
+        @media (max-width: 768px) {
+            nav {
+                flex-direction: column;
+            }
+            .hero h1 {
+                font-size: 2rem;
+            }
+            .video-container {
+                /* Untuk layar kecil, batasi lebar iframe agar tidak terlalu besar */
+                max-width: 100%;
+                padding-bottom: 56.25%; 
+            }
+            .recipe-grid, .article-grid {
+                grid-template-columns: 1fr;
+            }
+            #mission ul {
+                flex-direction: column;
+                align-items: center;
+            }
+            footer {
+                flex-direction: column; 
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h2>Kuliner Nusantara</h2>
+        <nav>
+            <a href="#home">Beranda</a>
+            <a href="#mission">Tujuan</a>
+            <a href="#recipes">Resep</a>
+            <a href="#articles">Artikel Sejarah</a>
+        </nav>
+    </header>
+
+    <section id="home" class="hero">
+        <div class="hero-content">
+            <h1>Jelajahi Kekayaan Kuliner Nusantara</h1>
+            <p>Edukasi Budaya Makanan Tradisional Indonesia</p>
+            
+            <div class="video-container">
+                <iframe 
+                    src= "GAMBAR/videoplayback.mp4"
+                    title="50 Makanan Khas Indonesia Terpopuler dan Enak" 
+                    frameborder="0" 
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                    allowfullscreen>
+                </iframe>
+            </div>
+            
+        </div>
+    </section>
+
+    <section id="mission">
+        <h2>Tujuan Website Kami</h2>
+        <p>Kuliner Nusantara hadir sebagai platform digital untuk melestarikan dan mempromosikan warisan makanan tradisional Indonesia.</p>
+        <ul>
+            <li>**Edukasi Budaya:** Menyediakan informasi akurat mengenai asal usul, sejarah, dan nilai filosofis di balik setiap masakan.</li>
+            <li>**Pelestarian Resep:** Mendokumentasikan resep otentik dari berbagai pulau agar tidak hilang ditelan zaman dan dapat dipraktikkan oleh generasi modern.</li>
+            <li>**Promosi Wisata Kuliner:** Mendorong minat masyarakat lokal dan internasional untuk menjelajahi kekayaan kuliner Indonesia sebagai bagian dari pariwisata.</li>
+            <li>**Media Interaksi:** Menjadi ruang bagi penggemar masakan tradisional untuk berbagi pengetahuan dan pengalaman.</li>
+        </ul>
+    </section>
+    
+    <section id="recipes">
+        <h2>Resep Berdasarkan Pulau</h2>
+        <div class="filter">
+            <label for="pulau">Filter Pulau:</label>
+            <select id="pulau" onchange="filterRecipes()">
+                <option value="all">Semua</option>
+                <option value="jawa">Jawa</option>
+                <option value="sumatera">Sumatera</option>
+                <option value="kalimantan">Kalimantan</option>
+                <option value="sulawesi">Sulawesi</option>
+                <option value="ntb">Nusa Tenggara</option> <option value="papua">Papua</option>
+            </select>
+        </div>
+        <div class="recipe-grid" id="recipe-list">
+            
+            <div class="card" data-pulau="jawa">
+                <img src= "GAMBAR/GYDEG.jpg">
+                <h3>Gudeg</h3>
+                <p>Nangka muda dimasak dengan gula jawa dan santan, khas Yogyakarta.</p>
+                <button class="toggle-btn" onclick="toggleDetails(this)">Lihat Resep & Artikel</button>
+                <div class="details">
+                    <h4>Asal Usul:</h4>
+                    <p>Gudeg adalah hidangan khas Yogyakarta yang dibuat dari nangka muda yang dimasak lama dengan santan serta bumbu seperti gula jawa, bawang, ketumbar, dan daun salam. Proses memasaknya yang perlahan menghasilkan rasa manis, gurih, dan aroma khas yang melekat pada kuliner Yogyakarta. Awalnya, gudeg berkembang sebagai makanan rumahan masyarakat Jawa karena bahan dasarnya melimpah dan tahan lama setelah dimasak. Lama-kelamaan, gudeg menjadi ikon budaya Jawa yang mencerminkan kelembutan rasa, kehalusan tradisi, serta kearifan lokal dalam mengolah bahan sederhana menjadi makanan istimewa.</p>
+                    <h4>Bahan (4 porsi):</h4>
+                    <ul>
+                        <li>1 kg nangka muda, potong-potong</li>
+                        <li>500 ml santan kental</li>
+                        <li>150g gula merah, sisir</li>
+                        <li>Bumbu: bawang merah, bawang putih, ketumbar, lengkuas, daun salam</li>
+                        <li>Telur rebus dan ayam suwir (pelengkap)</li>
+                    </ul>
+                    <h4>Langkah:</h4>
+                    <ol>
+                        <li>Rebus nangka muda hingga agak lunak.</li>
+                        <li>Susun daun salam, bumbu halus, nangka, dan gula merah di panci.</li>
+                        <li>Tuang santan hingga merendam semua bahan.</li>
+                        <li>Masak dengan api sangat kecil selama 4-6 jam hingga kuah kering dan warna cokelat pekat.</li>
+                        <li>Sajikan dengan nasi, krecek, dan telur/ayam.</li>
+                    </ol>
+                    <div class="testimoni">
+                        <h4>Apa Kata Mereka?</h4>
+                        <p>"Memasak gudeg butuh kesabaran, tapi hasil manis dan gurihnya benar-benar membayar tuntas. Rasanya membawa saya langsung ke Jogja!"</p>
+                        <small>— Ibu Siti, Jakarta</small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card" data-pulau="sumatera">
+                <img src= "GAMBAR/gulai.jpg">
+                <h3>Gulai</h3>
+                <p>Kuah santan dengan rempah, populer di Sumatera.</p>
+                <button class="toggle-btn" onclick="toggleDetails(this)">Lihat Resep & Artikel</button>
+                <div class="details">
+                    <h4>Asal Usul:</h4>
+                    <p>Gulai merupakan salah satu hidangan khas Nusantara yang lahir dari perpaduan budaya kuliner Melayu dan pengaruh rempah-rempah India. Masakan ini dikenal dengan kuahnya yang kaya, beraroma kuat, serta menggunakan bumbu seperti kunyit, ketumbar, jintan, lengkuas, dan santan yang melimpah. Pada awalnya, gulai berkembang di daerah Sumatra—khususnya Minangkabau—sebagai cara mengolah daging dan hasil laut agar tahan lama sekaligus bercita rasa tinggi.</p>
+                    <h4>Bahan (4 porsi):</h4>
+                    <ul>
+                        <li>500g daging ayam atau sapi</li>
+                        <li>1 liter santan</li>
+                        <li>Bumbu: cabai, bawang merah, bawang putih, kunyit, lengkuas, serai</li>
+                        <li>Daun salam dan garam</li>
+                    </ul>
+                    <h4>Langkah:</h4>
+                    <ol>
+                        <li>Haluskan bumbu, tumis hingga harum.</li>
+                        <li>Masukkan daging, aduk rata.</li>
+                        <li>Tuang santan, masak hingga daging empuk.</li>
+                        <li>Sajikan dengan nasi.</li>
+                    </ol>
+                    <div class="testimoni">
+                        <h4>Apa Kata Mereka?</h4>
+                        <p>"Rempahnya nendang sekali! Kuahnya kental dan bikin ketagihan. Saya coba resep Gulai Kambing ini saat Idul Adha dan sukses besar!"</p>
+                        <small>— Bapak Rudi, Medan</small>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card" data-pulau="sumatera">
+                <img src= "GAMBAR/rendang_web_0.jpg">
+                <h3>Rendang</h3>
+                <p>Masakan daging sapi khas Minangkabau, Sumatera Barat.</p>
+                <button class="toggle-btn" onclick="toggleDetails(this)">Lihat Resep & Artikel</button>
+                <div class="details">
+                    <h4>Asal Usul:</h4>
+                    <p>Rendang berasal dari Sumatera Barat, diperkenalkan oleh suku Minangkabau. Awalnya digunakan sebagai cara menyimpan daging dalam waktu lama dengan bumbu rempah.</p>
+                    <h4>Bahan (4 porsi):</h4>
+                    <ul>
+                        <li>1 kg daging sapi</li>
+                        <li>2 liter santan kelapa</li>
+                        <li>Bumbu: cabai, bawang merah, bawang putih, jahe, lengkuas, serai, daun jeruk, kunyit</li>
+                        <li>Garam dan gula aren</li>
+                    </ul>
+                    <h4>Langkah:</h4>
+                    <ol>
+                        <li>Tumis bumbu halus hingga harum.</li>
+                        <li>Masukkan daging, aduk rata.</li>
+                        <li>Tuang santan, masak dengan api sangat kecil hingga kering dan empuk (3-4 jam).</li>
+                        <li>Sajikan dengan nasi hangat.</li>
+                    </ol>
+                    <div class="testimoni">
+                        <h4>Apa Kata Mereka?</h4>
+                        <p>"Siapa bilang rendang sulit dibuat? Dengan panduan ini, rendang saya jadi kering dan bumbunya meresap sempurna. Ini masakan kebanggaan!"</p>
+                        <small>— Mila, Padang</small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card" data-pulau="kalimantan">
+                <img src= "GAMBAR/nasi bekepor.jpg">
+                <h3>Nasi Bekepor</h3>
+                <p>Nasi pulen khas Kutai, Kalimantan Timur, yang dimasak dalam bambu.</p>
+                <button class="toggle-btn" onclick="toggleDetails(this)">Lihat Resep & Artikel</button>
+                <div class="details">
+                    <h4>Asal Usul:</h4>
+                    <p>Nasi Bekepor adalah makanan tradisional dari Kutai Kartanegara, Kalimantan Timur. Dahulu, nasi ini dimasak menggunakan bambu (seperti lemang) dan dibakar, sehingga menghasilkan aroma yang khas. Sekarang, nasi ini sering dimasak di panci atau dandang, dicampur dengan ikan asin, daun kemangi, dan sambal raja (sambal khas Kutai).</p>
+                    <h4>Bahan (4 porsi):</h4>
+                    <ul>
+                        <li>400g beras, cuci bersih</li>
+                        <li>200 ml santan encer</li>
+                        <li>50g ikan asin, goreng/suwir</li>
+                        <li>Daun kemangi, secukupnya</li>
+                        <li>Bumbu: bawang merah, bawang putih, serai, daun salam</li>
+                    </ul>
+                    <h4>Langkah:</h4>
+                    <ol>
+                        <li>Aron beras dengan santan hingga air menyusut.</li>
+                        <li>Tambahkan bumbu, ikan asin, dan daun kemangi, aduk rata.</li>
+                        <li>Kukus hingga matang dan tanak (sekitar 30 menit).</li>
+                        <li>Sajikan hangat dengan lauk pauk khas Kutai lainnya, seperti Sambal Raja.</li>
+                    </ol>
+                    <div class="testimoni">
+                        <h4>Apa Kata Mereka?</h4>
+                        <p>"Nasi Bekepor ini unik sekali! Perpaduan ikan asin dan kemangi memberikan aroma yang otentik. Beda dari nasi biasa."</p>
+                        <small>— Dimas, Balikpapan</small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card" data-pulau="sulawesi">
+                <img src= "GAMBAR/soto.jpg">
+                <h3>Coto Makassar</h3>
+                <p>Sup daging berempah kental dengan kacang tanah, khas Sulawesi Selatan.</p>
+                <button class="toggle-btn" onclick="toggleDetails(this)">Lihat Resep & Artikel</button>
+                <div class="details">
+                    <h4>Asal Usul:</h4>
+                    <p>Coto Makassar, atau Coto Mangkasara, adalah masakan tradisional Suku Makassar. Hidangan ini sudah ada sejak masa Kerajaan Gowa-Tallo dan disajikan kepada para bangsawan. Coto menggunakan 40 jenis rempah-rempah yang disebut "Ampa' Rampa'" dan dikenal karena kuah kaldu daging/jeroan yang kaya dan gurih.</p>
+                    <h4>Bahan (4 porsi):</h4>
+                    <ul>
+                        <li>500g daging sapi dan jeroan (babat, hati)</li>
+                        <li>2 liter air cucian beras (sebagai kaldu)</li>
+                        <li>Bumbu: bawang merah, bawang putih, jahe, lengkuas, serai, daun salam, ketumbar, jintan, kacang tanah sangrai</li>
+                        <li>Garam dan gula</li>
+                    </ul>
+                    <h4>Langkah:</h4>
+                    <ol>
+                        <li>Rebus daging dan jeroan hingga empuk, sisihkan air kaldunya.</li>
+                        <li>Haluskan bumbu bersama kacang tanah sangrai, tumis hingga harum.</li>
+                        <li>Masukkan bumbu tumis ke dalam air kaldu rebusan daging.</li>
+                        <li>Masak hingga kuah mengental dan bumbu meresap.</li>
+                        <li>Sajikan dengan irisan daging, bawang goreng, daun bawang, dan ketupat/burasa.</li>
+                    </ol>
+                    <div class="testimoni">
+                        <h4>Apa Kata Mereka?</h4>
+                        <p>"Kacang tanah sangrai di kuah Coto ini memang rahasianya. Gurih, kental, dan menghangatkan! Cocok disantap saat hujan."</p>
+                        <small>— Sinta, Makassar</small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card" data-pulau="ntb"> <img src= "GAMBAR/TALIWANG.jpg">
+                <h3>Ayam Taliwang</h3>
+                <p>Ayam bakar pedas khas Lombok, Nusa Tenggara.</p>
+                <button class="toggle-btn" onclick="toggleDetails(this)">Lihat Resep & Artikel</button>
+                <div class="details">
+                    <h4>Asal Usul:</h4>
+                    <p>Ayam Taliwang adalah hidangan khas Lombok yang berasal dari Desa Karang Taliwang, Mataram. Masakan ini terkenal dengan cita rasa pedas, gurih, dan smokey karena ayam kampung muda dibakar setelah dibalur bumbu cabai merah kering, bawang, terasi, dan sedikit gula.
+Menu ini awalnya disajikan sebagai hidangan kehormatan bagi tamu-tamu bangsawan Sasak, sehingga bumbunya dibuat kuat dan berkarakter. Seiring waktu, Ayam Taliwang menjadi ikon kuliner Lombok yang menonjolkan keberanian rasa masyarakat setempat serta kekayaan rempah Nusantara.</p>
+                    <h4>Bahan (4 porsi):</h4>
+                    <ul>
+                        <li>1 ekor ayam, potong 8</li>
+                        <li>Bumbu: cabai merah, bawang merah, bawang putih, kencur, terasi</li>
+                        <li>Garam dan minyak</li>
+                    </ul>
+                    <h4>Langkah:</h4>
+                    <ol>
+                        <li>Haluskan bumbu, lumuri ayam.</li>
+                        <li>Diamkan 30 menit, lalu bakar hingga matang.</li>
+                        <li>Sajikan dengan sambal dan plecing kangkung.</li>
+                    </ol>
+                    <div class="testimoni">
+                        <h4>Apa Kata Mereka?</h4>
+                        <p>"Bumbunya sangat meresap dan pedasnya pas! Rasa bakarannya otentik, persis seperti yang saya makan di Lombok. Resep ini *recommended*."</p>
+                        <small>— Arya, Mataram</small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card" data-pulau="papua">
+                <img src= "GAMBAR/papeda.jpg">
+                <h3>Papeda</h3>
+                <p>Makanan pokok berupa bubur sagu kental dan lengket, khas Papua dan Maluku.</p>
+                <button class="toggle-btn" onclick="toggleDetails(this)">Lihat Resep & Artikel</button>
+                <div class="details">
+                    <h4>Asal Usul:</h4>
+                    <p>Papeda adalah makanan tradisional yang sangat penting di Papua dan Maluku. Papeda dibuat dari sagu, yang merupakan hasil olahan dari pohon sagu yang banyak tumbuh di wilayah timur Indonesia. Papeda memiliki tekstur seperti lem bening dan disajikan sebagai pengganti nasi, dimakan bersama kuah kuning ikan tongkol atau ikan gabus. Papeda melambangkan kearifan lokal dalam memanfaatkan sumber daya alam secara berkelanjutan.</p>
+                    <h4>Bahan (4 porsi):</h4>
+                    <ul>
+                        <li>250g tepung sagu</li>
+                        <li>1 liter air mendidih</li>
+                        <li>1/2 sendok teh garam</li>
+                        <li>Pelengkap: Ikan Kuah Kuning (ikan tongkol/gabus, kunyit, belimbing wuluh)</li>
+                    </ul>
+                    <h4>Langkah:</h4>
+                    <ol>
+                        <li>Larutkan tepung sagu dengan sedikit air dingin hingga tidak menggumpal.</li>
+                        <li>Didihkan air dan garam.</li>
+                        <li>Tuangkan larutan sagu ke dalam air mendidih sambil terus diaduk cepat hingga sagu berubah warna menjadi bening dan mengental seperti lem.</li>
+                        <li>Angkat dan sajikan hangat bersama Ikan Kuah Kuning dan sayur tumis.</li>
+                    </ol>
+                    <div class="testimoni">
+                        <h4>Apa Kata Mereka?</h4>
+                        <p>"Papeda dan Kuah Kuning adalah perpaduan surga! Rasanya segar dan gurih, mengingatkan saya pada alam laut Papua yang indah."</p>
+                        <small>— Mama Yuli, Raja Ampat</small>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </section>
+
+    <section id="articles">
+        <h2>Artikel Sejarah Asal Usul</h2>
+        <div class="article-grid">
+            
+            <div class="card">
+                <img src= "GAMBAR/boran nasi.webp">
+                <h3>Asal Usul Nasi Boran Lamongan</h3>
+                <p>Artikel tentang sejarah Nasi Boran, ikon kuliner Lamongan, Jawa Timur.</p>
+                <button class="toggle-btn" onclick="toggleDetails(this)">Baca Artikel Lengkap</button>
+                <div class="details">
+                    <p>Nasi Boran adalah makanan khas Lamongan, Jawa Timur, yang dikenal karena cara penyajiannya yang unik dan cita rasa khas. Dinamakan "boran" karena penjual membawanya menggunakan **boran** (bakul besar dari anyaman bambu) yang diletakkan di atas kepala atau digendong. Makanan ini terdiri dari nasi yang disajikan dengan aneka lauk pauk, seperti ikan bandeng, ayam goreng, jeroan, peyek udang, dan terutama **sambal khas** yang rasanya pedas, manis, dan sedikit asam. Nasi Boran awalnya merupakan makanan yang dikonsumsi dan dijual oleh para pekerja di Lamongan. Saat ini, hidangan ini didominasi oleh pedagang perempuan, melambangkan kekuatan dan tradisi kuliner lokal yang lestari.</p>
+                </div>
+            </div>
+            <div class="card">
+                <img src= "GAMBAR/resep-sambal-bawang-1-2.jpg">
+                <h3>Asal Usul Sambal</h3>
+                <p>Eksplorasi sambal sebagai simbol pedasnya budaya Indonesia.</p>
+                <button class="toggle-btn" onclick="toggleDetails(this)">Baca Artikel Lengkap</button>
+                <div class="details">
+                    <p>Sambal adalah bumbu dasar yang tak terpisahkan dari Indonesia, dikenal sebagai pendamping wajib yang menyegarkan selera Intinya adalah perpaduan cabai, garam, dan terasi (atau bumbu lain) yang diulek. Sambal melambangkan kekayaan rempah dan semangat lokal—setiap daerah punya resep uniknya sendiri (diperkirakan lebih dari 300 jenis!), menjadikannya warisan budaya yang dinamis dan berharga.</p>
+                </div>
+            </div>
+            </div>
+    </section>
+
+    <footer>
+        <p>&copy; 2023 Kuliner Nusantara. Promosi Budaya Kuliner Indonesia.</p>
+        <div class="footer-qr">
+            <p>Beri Kami Rating!</p>
+            <a href="rating.html" title="Kunjungi halaman rating">
+                <img src= "GAMBAR/QR.png" alt="QR Code untuk Rating Website">
+            </a>
+        </div>
+    </footer>
+
+    <script>
+        // Perbaikan JavaScript 1: Menggunakan class untuk filter demi transisi halus
+        function filterRecipes() {
+            const pulau = document.getElementById('pulau').value;
+            const cards = document.querySelectorAll('#recipe-list .card');
+            cards.forEach(card => {
+                if (pulau === 'all' || card.getAttribute('data-pulau') === pulau) {
+                    card.classList.remove('hidden-by-filter');
+                } else {
+                    card.classList.add('hidden-by-filter');
+                }
+            });
+        }
+
+        // Perbaikan JavaScript 2: Fungsi toggle yang lebih andal untuk Resep/Artikel
+        function toggleDetails(button) {
+            const details = button.nextElementSibling;
+            const isActive = details.classList.contains('active');
+
+            // Toggle class 'active' untuk memicu transisi CSS
+            details.classList.toggle('active');
+
+            // Tentukan teks tombol default berdasarkan section/parent
+            let defaultText = 'Lihat Detail';
+            const sectionId = button.closest('section').id;
+
+            if (sectionId === 'recipes') {
+                defaultText = 'Lihat Resep & Artikel';
+            } else if (sectionId === 'articles') {
+                defaultText = 'Baca Artikel Lengkap';
+            }
+
+            // Set teks tombol
+            if (!isActive) { // Jika baru saja diaktifkan
+                button.textContent = 'Sembunyikan';
+            } else { // Jika baru saja disembunyikan
+                button.textContent = defaultText;
+            }
+        }
+    </script>
+</body>
+</html>
